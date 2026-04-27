@@ -112,6 +112,53 @@ def test_feit_forward_mean_wavelets():
     print("test_feit_forward_mean_wavelets: OK")
 
 
+def test_feit_forward_sp500_concat():
+    torch.manual_seed(0)
+    from feit_model import FEiTransformerForecaster
+    B, L, N, H = 4, 60, 5, 3
+    m = FEiTransformerForecaster(
+        n_features=N, d_model=64, n_heads=4, e_layers=2, dropout=0.0,
+        version="Fourier", modes=16, mode_select="low",
+        moving_avg=25, n_horizons=H, lookback=L, target_idx=3,
+        pool="sp500_concat",
+    )
+    y = m(torch.randn(B, L, N))
+    assert tuple(y.shape) == (B, H), f"got {tuple(y.shape)}"
+    print("test_feit_forward_sp500_concat: OK")
+
+
+def test_feit_backward_no_nan():
+    """Loss → backward → all grads finite."""
+    torch.manual_seed(0)
+    from feit_model import FEiTransformerForecaster
+    m = FEiTransformerForecaster(
+        n_features=5, d_model=64, n_heads=4, e_layers=2, dropout=0.0,
+        version="Fourier", modes=16, mode_select="low",
+        moving_avg=25, n_horizons=3, lookback=60, target_idx=3,
+        pool="sp500_concat",
+    )
+    x = torch.randn(4, 60, 5)
+    y = m(x)
+    loss = y.pow(2).mean()
+    loss.backward()
+    bad = [n for n, p in m.named_parameters()
+           if p.grad is not None and not torch.isfinite(p.grad).all()]
+    assert not bad, f"non-finite gradients in: {bad}"
+    print("test_feit_backward_no_nan: OK")
+
+
+def test_feit_decomp_reconstruction():
+    """series_decomp(x) returns (seasonal, trend); seasonal + trend ≈ x."""
+    torch.manual_seed(0)
+    from layers.Autoformer_EncDec import series_decomp
+    decomp = series_decomp(25)
+    x = torch.randn(4, 60, 5)
+    seasonal, trend = decomp(x)
+    diff = (seasonal + trend - x).abs().max().item()
+    assert diff < 1e-5, f"reconstruction error: {diff}"
+    print("test_feit_decomp_reconstruction: OK")
+
+
 def test_feit_param_count_reasonable():
     """At d_model=64 the FEiT model should be in the same OoM as iTransformer."""
     torch.manual_seed(0)
@@ -136,5 +183,8 @@ if __name__ == "__main__":
     test_volatile_wavelets_no_grad_through_pywt()
     test_feit_forward_mean_fourier()
     test_feit_forward_mean_wavelets()
+    test_feit_forward_sp500_concat()
+    test_feit_backward_no_nan()
+    test_feit_decomp_reconstruction()
     test_feit_param_count_reasonable()
     print("\nAll tests passed.")
