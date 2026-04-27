@@ -25,7 +25,8 @@ python3 -m venv .venv   # create if missing
 ## Model-Specific Notes
 
 ### FEDformer
-- Imports from `repos/FEDformer` via `sys.path.insert(0, 'repos/FEDformer')`
+- Repo: https://github.com/MAZiqing/FEDformer — clone to `repos/FEDformer`
+- Imports via `sys.path.insert(0, 'repos/FEDformer')`
 - Uses `FourierBlock`, `FourierCrossAttention`, `MultiWaveletTransform`, `MultiWaveletCross`
 - **FourierBlock constraint**: `n_heads` must equal 8 (hardcoded weight shape in repo)
 - **Wavelet param explosion**: default `c=128` → ~50M params with small d_model. Use `wavelet_c=8`
@@ -33,6 +34,7 @@ python3 -m venv .venv   # create if missing
 - Encoder-only design: no decomp, just attention + FFN → linear head
 
 ### iTransformer
+- Repo: https://github.com/thuml/iTransformer — clone to `repos/iTransformer`
 - **Inverted dimensions**: variables become tokens, time steps become embedding dim
 - `DataEmbeddingInverted` is inlined (avoids import conflict with FEDformer's same-named modules)
 - `x` is permuted `[B, L, N] → [B, N, L]` before the linear embedding

@@ -39,7 +39,7 @@ Each model is evaluated in two configurations:
 ```
 research.ipynb      # Main notebook: all models, HP search, walk-forward evaluation
 tickers.csv         # 29 ticker symbols used in the study
-results/            # Saved HP search CSVs and walk-forward JSON files (gitignored)
+results/            # HP search CSVs and walk-forward JSON files per model
 ```
 
 ## Requirements
@@ -50,7 +50,7 @@ source .venv/bin/activate
 pip install torch numpy pandas scikit-learn matplotlib yfinance einops sympy
 ```
 
-The notebook uses local copies of FEDformer and iTransformer repositories for their frequency-domain layers. Clone them alongside this repo:
+The notebook uses [FEDformer](https://github.com/MAZiqing/FEDformer) and [iTransformer](https://github.com/thuml/iTransformer) for their frequency-domain layers. Clone them into `repos/`:
 
 ```bash
 mkdir repos
