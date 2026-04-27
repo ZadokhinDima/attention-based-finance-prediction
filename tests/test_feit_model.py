@@ -57,9 +57,36 @@ def test_volatile_fourier_random_determinism():
     print("test_volatile_fourier_random_determinism: OK")
 
 
+def test_volatile_wavelets_shape():
+    torch.manual_seed(0)
+    from feit_model import VolatileFeatures
+    B, N, L, D = 4, 5, 60, 32
+    vf = VolatileFeatures(version="Wavelets", lookback=L, d_model=D,
+                          wavelet_base="db4", wavelet_level=3)
+    out = vf(torch.randn(B, N, L))
+    assert tuple(out.shape) == (B, N, D), f"got {tuple(out.shape)}"
+    print("test_volatile_wavelets_shape: OK")
+
+
+def test_volatile_wavelets_no_grad_through_pywt():
+    """pywt is non-differentiable; gradient must still flow through self.proj."""
+    torch.manual_seed(0)
+    from feit_model import VolatileFeatures
+    vf = VolatileFeatures(version="Wavelets", lookback=60, d_model=32,
+                          wavelet_base="db4", wavelet_level=3)
+    x = torch.randn(2, 3, 60, requires_grad=False)
+    out = vf(x)
+    out.sum().backward()
+    assert vf.proj.weight.grad is not None, "proj weights got no gradient"
+    assert torch.isfinite(vf.proj.weight.grad).all(), "non-finite gradients"
+    print("test_volatile_wavelets_no_grad_through_pywt: OK")
+
+
 if __name__ == "__main__":
     test_module_imports()
     test_volatile_fourier_low_shape()
     test_volatile_fourier_random_shape()
     test_volatile_fourier_random_determinism()
+    test_volatile_wavelets_shape()
+    test_volatile_wavelets_no_grad_through_pywt()
     print("\nAll tests passed.")
