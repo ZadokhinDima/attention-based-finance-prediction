@@ -47,7 +47,7 @@ results/            # HP search CSVs and walk-forward JSON files per model
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install torch numpy pandas scikit-learn matplotlib yfinance einops sympy
+pip install torch numpy pandas scikit-learn matplotlib yfinance einops sympy pywavelets
 ```
 
 The notebook uses [FEDformer](https://github.com/MAZiqing/FEDformer) and [iTransformer](https://github.com/thuml/iTransformer) for their frequency-domain layers. Clone them into `repos/`:
