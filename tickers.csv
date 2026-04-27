@@ -1,0 +1,30 @@
+name,yfinance_id,filename,start_date,has_volume,is_target
+S&P500,^GSPC,SandP500,1950-01-03,1,1
+NASDAQ Composite,^IXIC,NASDAQ_Composite,1971-02-05,1,0
+Dow Jones,^DJI,Dow_Jones,1992-01-02,1,0
+Russell 2000,^RUT,Russell_2000,1987-09-10,1,0
+VIX,^VIX,VIX,1990-01-02,0,0
+US Dollar Index,DX-Y.NYB,US_Dollar_Index,1971-01-04,1,0
+Gold Futures,GC=F,Gold_Futures,2000-08-30,1,0
+Crude Oil WTI,CL=F,Crude_Oil_WTI,2000-08-23,1,0
+BTC-USD,BTC-USD,BTC-USD,2014-09-17,1,0
+XLK Technology,XLK,XLK_Technology,1998-12-22,1,0
+XLF Financials,XLF,XLF_Financials,1998-12-22,1,0
+XLE Energy,XLE,XLE_Energy,1998-12-22,1,0
+XLV Health Care,XLV,XLV_Health_Care,1998-12-22,1,0
+US 10Y Treasury,^TNX,US_10Y_Treasury,1962-01-02,1,0
+US 13W Treasury,^IRX,US_13W_Treasury,1960-01-04,1,0
+TLT 20Y Bond,TLT,TLT_20Y_Bond,2002-07-30,1,0
+Silver Futures,SI=F,Silver_Futures,2000-08-30,1,0
+Natural Gas,NG=F,Natural_Gas,2000-08-30,1,0
+Copper Futures,HG=F,Copper_Futures,2000-08-30,1,0
+EUR-USD,EURUSD=X,EUR-USD,2003-12-01,0,0
+JPY-USD,JPYUSD=X,JPY-USD,1996-10-30,0,0
+GBP-USD,GBPUSD=X,GBP-USD,2003-12-01,0,0
+ETH-USD,ETH-USD,ETH-USD,2017-11-09,1,0
+FTSE 100,^FTSE,FTSE_100,1984-01-03,1,0
+DAX,^GDAXI,DAX,1987-12-30,1,0
+Nikkei 225,^N225,Nikkei_225,1965-01-05,1,0
+Shanghai Composite,000001.SS,Shanghai_Composite,1997-07-02,1,0
+HYG High Yield,HYG,HYG_High_Yield,2007-04-11,1,0
+TIPS Bond ETF,TIP,TIPS_Bond_ETF,2003-12-05,1,0
