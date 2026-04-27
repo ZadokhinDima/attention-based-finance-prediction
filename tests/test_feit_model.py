@@ -82,6 +82,51 @@ def test_volatile_wavelets_no_grad_through_pywt():
     print("test_volatile_wavelets_no_grad_through_pywt: OK")
 
 
+def test_feit_forward_mean_fourier():
+    torch.manual_seed(0)
+    from feit_model import FEiTransformerForecaster
+    B, L, N, H = 4, 60, 5, 3
+    m = FEiTransformerForecaster(
+        n_features=N, d_model=64, n_heads=4, e_layers=2, dropout=0.1,
+        version="Fourier", modes=16, mode_select="low",
+        moving_avg=25, n_horizons=H, lookback=L, target_idx=0,
+        pool="mean",
+    )
+    y = m(torch.randn(B, L, N))
+    assert tuple(y.shape) == (B, H), f"got {tuple(y.shape)}"
+    print("test_feit_forward_mean_fourier: OK")
+
+
+def test_feit_forward_mean_wavelets():
+    torch.manual_seed(0)
+    from feit_model import FEiTransformerForecaster
+    B, L, N, H = 4, 60, 5, 3
+    m = FEiTransformerForecaster(
+        n_features=N, d_model=64, n_heads=4, e_layers=2, dropout=0.1,
+        version="Wavelets", wavelet_base="db4", wavelet_level=3,
+        moving_avg=25, n_horizons=H, lookback=L, target_idx=0,
+        pool="mean",
+    )
+    y = m(torch.randn(B, L, N))
+    assert tuple(y.shape) == (B, H), f"got {tuple(y.shape)}"
+    print("test_feit_forward_mean_wavelets: OK")
+
+
+def test_feit_param_count_reasonable():
+    """At d_model=64 the FEiT model should be in the same OoM as iTransformer."""
+    torch.manual_seed(0)
+    from feit_model import FEiTransformerForecaster
+    m = FEiTransformerForecaster(
+        n_features=145, d_model=64, n_heads=8, e_layers=2, dropout=0.1,
+        version="Fourier", modes=32, mode_select="low",
+        moving_avg=25, n_horizons=3, lookback=60, target_idx=0,
+        pool="mean",
+    )
+    n_params = sum(p.numel() for p in m.parameters())
+    assert 50_000 < n_params < 5_000_000, f"unexpected param count: {n_params:,}"
+    print(f"test_feit_param_count_reasonable: OK ({n_params:,} params)")
+
+
 if __name__ == "__main__":
     test_module_imports()
     test_volatile_fourier_low_shape()
@@ -89,4 +134,7 @@ if __name__ == "__main__":
     test_volatile_fourier_random_determinism()
     test_volatile_wavelets_shape()
     test_volatile_wavelets_no_grad_through_pywt()
+    test_feit_forward_mean_fourier()
+    test_feit_forward_mean_wavelets()
+    test_feit_param_count_reasonable()
     print("\nAll tests passed.")
