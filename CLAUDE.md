@@ -41,6 +41,17 @@ python3 -m venv .venv   # create if missing
 - Pool strategies: `sp500_token` (takes the target variable's token) vs `mean` (average all variable tokens)
 - `target_idx` must be computed with `df.columns.get_loc(("SandP500", "Close"))` for the correct column
 
+### FEiT (Frequency Enhanced iTransformer) — custom hybrid
+- Source: `feit_model.py` (sibling to `research.ipynb`, imported by the notebook cell)
+- Tests: `tests/test_feit_model.py` — runnable as `.venv/bin/python tests/test_feit_model.py`
+- Cell-insertion script: `tools/insert_feit_cells.py` (idempotent)
+- Decomposition once at input; trend + volatile streams concat into 2N tokens
+- Volatile branch: FFT-modes (`version="Fourier"`) or `pywt.wavedec` (`version="Wavelets"`)
+- HP search filter: `d_model % n_heads == 0`; for Fourier fix `wavelet_level=2`; for Wavelets fix `modes=16` (deduplicates trials, matches existing FEDformer pattern)
+- Pool: `sp500_concat` concatenates the trend and volatile target tokens; `mean` averages all 2N
+- No FourierBlock complex gradients — `torch.fft.rfft` returns complex but `Linear` weights are real
+- `modes` is silently clamped to `lookback // 2 + 1` (e.g. `modes=32 → 31` at L=60)
+
 ### Complex Gradients (FEDformer FourierBlock)
 `FourierBlock` has `cfloat` (complex) weight tensors. PyTorch's `clip_grad_norm_` crashes on these. The `_clip_grad_norm_safe()` function in the Trainer cell handles this via `torch.view_as_real()`.
 
