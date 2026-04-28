@@ -25,3 +25,24 @@ print(m(x))   # untrained — should vary across samples; if all ~0, init is the
 ```
 
 **Status:** known and accepted for current run; revisit after notebook completes.
+
+---
+
+## Per-model vs baseline comparison plots
+
+**Want:** instead of a single ALL_MODELS comparison at the end, draw a comparison plot after each model section showing **baseline + that model (full) + that model (simple)** — three lines per metric/horizon. Lets you see whether each model beats baseline on its own without scanning a crowded global chart.
+
+**Where:** insert one new code cell at the end of each model section (after the simple-version walk-forward). Six cells total: LSTM, Transformer, Informer, FEDformer, iTransformer, FEiT.
+
+**Implementation sketch:**
+```python
+plot_walk_forward({
+    "Baseline":            os.path.join(RESULTS, "baseline", "walk_forward.json"),
+    "LSTM":                os.path.join(RESULTS, "lstm", "walk_forward.json"),
+    "LSTM-simple":         os.path.join(RESULTS, "lstm-simple", "walk_forward.json"),
+}, metrics=("DirAcc",))
+```
+
+Helper script: `tools/insert_per_model_comparisons.py` — locate each model's simple-version cell, append the comparison cell after it. Idempotent.
+
+**Status:** to do after current notebook run.
