@@ -5,5 +5,4 @@ repos/
 tools/
 TODO.md
 data/
-results/**/*.pt
 .DS_Store
